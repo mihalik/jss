@@ -382,7 +382,7 @@ Rule.uid = 0
  */
 Rule.prototype.prop = function (name, value) {
     // Its a setter.
-    if (value) {
+    if (value != null) {
         if (!this.style) this.style = {}
         this.style[name] = value
         // If linked option in StyleSheet is not passed, CSSRule is not defined.
@@ -575,6 +575,7 @@ function StyleSheet(rules, options) {
     if (this.options.named == null) this.options.named = true
     this.element = null
     this.attached = false
+    this.document = this.options.document || document
     this.media = this.options.media
     this.type = this.options.type
     this.title = this.options.title
@@ -585,7 +586,7 @@ function StyleSheet(rules, options) {
     this.linked = false
 
     // Don't create element if we are not in a browser environment.
-    if (typeof document != 'undefined') {
+    if (typeof this.document != 'undefined') {
         this.element = this.createElement()
     }
 
@@ -612,7 +613,7 @@ StyleSheet.prototype.attach = function () {
         this.deployed = true
     }
 
-    document.head.appendChild(this.element)
+    this.document.head.appendChild(this.element)
 
     // Before element is attached to the dom rules are not created.
     if (!this.linked && this.options.link) {
@@ -803,7 +804,7 @@ StyleSheet.prototype.createRules = function (key, style, options) {
  * @return {Element}
  */
 StyleSheet.prototype.createElement = function () {
-    var element = document.createElement('style')
+    var element = this.document.createElement('style')
 
     StyleSheet.ATTRIBUTES.forEach(function (name) {
         if (this[name]) element.setAttribute(name, this[name])
